@@ -9,7 +9,7 @@ export class Task {
     id: number;
 
     @Column()
-    tasnkName: string;
+    taskName: string;
 
     @Column()
     descricao: string;

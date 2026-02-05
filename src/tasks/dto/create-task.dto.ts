@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 import { TypesStatus } from "src/enums/types.enum";
 
 export class CreateTaskDto {
@@ -6,6 +6,7 @@ export class CreateTaskDto {
     @IsNotEmpty()
     @IsString()
     taskName: string;
+
 
     @IsNotEmpty()
     @IsString()
