@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,7 +6,7 @@ import { Task } from './entities/task.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
 import { TypesStatus } from 'src/enums/types.enum';
-import { Type } from 'class-transformer';
+import { TokenPayloadDto } from 'src/auth/dto/token-payload.dto';
 
 @Injectable()
 export class TasksService {
@@ -16,9 +16,11 @@ export class TasksService {
     private readonly repositoryTask: Repository<Task>,
     private readonly userService: UsersService,
   ) { }
-  async create(createTaskDto: CreateTaskDto, userId: number) {
+  async create(createTaskDto: CreateTaskDto, tokenPayload: TokenPayloadDto) {
 
-    const user = await this.userService.findOne(userId)
+    const user = await this.userService.findOne(
+      tokenPayload.sub
+    )
 
     if(!user) {
       throw new NotFoundException('Usuario não econtrado! ')
@@ -84,8 +86,16 @@ export class TasksService {
     return task;
   }
 
-  async update(id: number, updateTaskDto: UpdateTaskDto) {
+  async update(
+    id: number, 
+    updateTaskDto: UpdateTaskDto,
+    tokenPayload: TokenPayloadDto) {
 
+    const task = await this.findOne(id)
+
+    if (task.criadaPor.id !== tokenPayload.sub){
+      throw new ForbiddenException('Esse serviço não é seu')
+    }
     const service = await this.repositoryTask.preload({
       id,
       taskName: updateTaskDto.taskName,
@@ -99,7 +109,9 @@ export class TasksService {
     return service;
   }
 
-  async remove(id: number) {
+  async remove(
+    id: number, 
+    tokenPayload: TokenPayloadDto) {
 
     const task = await this.repositoryTask.findOne({
       where: { id }
@@ -107,6 +119,10 @@ export class TasksService {
 
     if(!task) {
       throw new NotFoundException('Tafera não encontrada')
+    }
+
+    if (task.id !== tokenPayload.sub){
+      throw new ForbiddenException('Esse serviço não é seu')
     }
 
     await this.repositoryTask.remove(task);
