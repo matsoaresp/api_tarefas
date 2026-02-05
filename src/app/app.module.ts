@@ -3,10 +3,12 @@ import { AppController } from '../app/app.controller';
 import { AppService } from '../app/app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from 'src/users/users.module';
+import { TasksModule } from 'src/tasks/tasks.module';
 
 @Module({
   imports: 
   [UsersModule, 
+    TasksModule,
     TypeOrmModule.forRoot({
     type: 'postgres',
     host: 'localhost',
