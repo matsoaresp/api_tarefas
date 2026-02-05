@@ -1,47 +1,57 @@
-import { CanActivate, ExecutionContext, Inject, UnauthorizedException } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { Observable } from "rxjs";
-import jwtConfig from "../config/jwt.config";
-import type { ConfigType } from "@nestjs/config";
+import {
+  CanActivate,
+  ExecutionContext,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { Request } from 'express';
+import type { ConfigType } from '@nestjs/config';
+import jwtConfig from '../config/jwt.config';
 
-
+@Injectable()
 export class AuthTokenGuard implements CanActivate {
+  constructor(
+    private readonly jwtService: JwtService,
 
-    constructor (
-        private readonly jwtService: JwtService,
-        @Inject(jwtConfig.KEY)
-        private readonly jwtConfiguration: ConfigType<typeof jwtConfig>
-    )
-    {}
-    async canActivate(context: ExecutionContext): Promise<boolean>  {
-        const request: Request = context.switchToHttp().getRequest()
-        const token = this.extractTokenFromHeade(request)
-        
-        if (!token) {
-            throw new UnauthorizedException('Não logado')
-        }
+    @Inject(jwtConfig.KEY)
+    private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
+  ) {}
 
-        try {
-            const payload = await this.jwtService.verifyAsync(
-                token,
-                this.jwtConfiguration,
-            );
-        }catch (error){
-            throw new UnauthorizedException('Falha ao logar!')
-        }
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest<Request>();
+    const token = this.extractTokenFromHeader(request);
 
-        return true
+    if (!token) {
+      throw new UnauthorizedException('Não autenticado');
     }
 
-    private extractTokenFromHeade(request: Request): string | undefined {
-        const authorization = request.headers['authorization'];
+    try {
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: this.jwtConfiguration.secret,
+        audience: this.jwtConfiguration.audience,
+        issuer: this.jwtConfiguration.issuer,
+      });
 
-        if (!authorization || typeof authorization !== 'string'){
-            return undefined;
-        }
-
-        const [type, token] = authorization.split('')
-        return type === 'Bearer' ? token : undefined
+      request['user'] = payload;
+    } catch {
+      throw new UnauthorizedException('Token inválido ou expirado');
     }
-    
+
+    return true;
+  }
+
+  private extractTokenFromHeader(
+    request: Request,
+  ): string | undefined {
+    const authorization = request.headers.authorization;
+
+    if (!authorization) {
+      return undefined;
+    }
+
+    const [type, token] = authorization.split(' ');
+    return type === 'Bearer' ? token : undefined;
+  }
 }
