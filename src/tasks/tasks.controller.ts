@@ -8,13 +8,14 @@ export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
-  create(@Body() createTaskDto: CreateTaskDto) {
-    return this.tasksService.create(createTaskDto);
+  create(@Body()createTaskDto: CreateTaskDto,
+      @Param('id') id:number ) {
+    return this.tasksService.create(createTaskDto,id);
   }
 
   @Get()
-  findAll() {
-    return this.tasksService.findAll();
+  findAll(@Param('id') id:number) {
+    return this.tasksService.findAll(id);
   }
 
   @Get(':id')

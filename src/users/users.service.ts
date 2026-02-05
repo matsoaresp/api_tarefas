@@ -39,6 +39,8 @@ export class UsersService {
   }
 
   async findAll() {
+
+   
     const users = await this.userRepository.find({
       order: {
         id: 'asc'
@@ -55,12 +57,15 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException ('Usuário não encontrado')
     }
+
     return user
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.userRepository.preload({
-      ...updateUserDto
+      id,
+      name: updateUserDto.name,
+      email: updateUserDto.email
     })
     if (!user){
       throw new NotFoundException('Usuário não encontrado')
