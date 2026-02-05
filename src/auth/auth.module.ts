@@ -1,4 +1,4 @@
-import { Inject, Module } from '@nestjs/common';
+import { Global, Inject, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,10 +9,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import jwtConfig from './config/jwt.config';
 import { JwtModule } from '@nestjs/jwt';
 
+@Global()
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
-    ConfigModule.forFeature(jwtConfig),
+    ConfigModule.forFeature(
+      jwtConfig),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -29,14 +31,14 @@ import { JwtModule } from '@nestjs/jwt';
         };
       },
     }),
-    
+
   ],
   controllers: [AuthController],
   providers: [{
     provide: HashingService,
     useClass: BscryptService,
   },
-  AuthService],
+    AuthService],
   exports: [HashingService, JwtModule, ConfigModule]
 })
-export class AuthModule {}
+export class AuthModule { }
