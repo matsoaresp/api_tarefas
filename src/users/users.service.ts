@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable, NotAcceptableException, NotFoundExcepti
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import { Users } from './entities/users.entity';
 import { Repository } from 'typeorm';
 import { PassThrough } from 'stream';
 import { Not } from 'typeorm/browser';
@@ -15,8 +15,8 @@ import { TokenPayloadDto } from 'src/auth/dto/token-payload.dto';
 export class UsersService {
 
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    @InjectRepository(Users)
+    private readonly userRepository: Repository<Users>,
     private readonly hashingService: HashingService,
   ) {}
 

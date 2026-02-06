@@ -1,7 +1,7 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import {LoginDto } from './dto/login.dto';
 import { Repository } from 'typeorm';
-import { User } from 'src/users/entities/user.entity';
+import { Users } from 'src/users/entities/users.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HashingService } from './hashing/hashing.service';
 import { JwtService } from '@nestjs/jwt';
@@ -13,8 +13,8 @@ export class AuthService {
   
 
   constructor (
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    @InjectRepository(Users)
+    private readonly userRepository: Repository<Users>,
     private readonly hashingService: HashingService,
     @Inject(jwtConfig.KEY)
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
