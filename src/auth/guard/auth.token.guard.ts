@@ -9,18 +9,18 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import type { ConfigType } from '@nestjs/config';
 import jwtConfig from '../config/jwt.config';
+import { REQUEST_TOKEN_PAYLOAD_KEY } from '../auth.constants';
 
 @Injectable()
 export class AuthTokenGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
-
     @Inject(jwtConfig.KEY)
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<Request>();
+    const request: Request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
@@ -28,26 +28,23 @@ export class AuthTokenGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: this.jwtConfiguration.secret,
-        audience: this.jwtConfiguration.audience,
-        issuer: this.jwtConfiguration.issuer,
-      });
+      const payload = await this.jwtService.verifyAsync(
+        token, 
+        this.jwtConfiguration,
+      );
 
-      request['user'] = payload;
-    } catch {
-      throw new UnauthorizedException('Token inválido ou expirado');
+      request[REQUEST_TOKEN_PAYLOAD_KEY] = payload;
+    } catch (error){
+      throw new UnauthorizedException('Falha ao logar! ');
     }
 
     return true;
   }
 
-  private extractTokenFromHeader(
-    request: Request,
-  ): string | undefined {
-    const authorization = request.headers.authorization;
+  private extractTokenFromHeader(request: Request): string | undefined {
+    const authorization = request.headers['authorization'];
 
-    if (!authorization) {
+    if (!authorization || typeof authorization !== 'string') {
       return undefined;
     }
 

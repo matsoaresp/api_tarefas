@@ -19,17 +19,20 @@ export class TasksController {
     return this.tasksService.create(createTaskDto, tokenPayloadDto);
   }
 
+
   @Get()
-  findAll() {
-    return this.tasksService.findAll();
+  findAll(@TokenPayloadParam() tokenPayloadDto: TokenPayloadDto) {
+    return this.tasksService.findAll(tokenPayloadDto);
   }
 
+ 
   @Get(':id')
   findOne(
     @Param('id') id: number) {
     return this.tasksService.findOne(id);
   }
 
+  
   @Patch(':id')
   update(
     @Param('id') id: number,
