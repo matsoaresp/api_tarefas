@@ -53,6 +53,13 @@ export class TasksController {
     @Body() updateTaskDto: UpdateTaskDto) {
 
     return this.tasksService.completedTask(id, updateTaskDto)
+  }
 
+  @Patch(':id/late_task')
+  lateTask(
+    @Param('id') id: number,
+    @Body() updateTaskDto: UpdateTaskDto
+  ){
+    return this.tasksService.lateTask(id,updateTaskDto)
   }
 }

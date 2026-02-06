@@ -42,12 +42,12 @@ export class TasksService {
   }
 
   async findAll(tokenPayload: TokenPayloadDto) {
-
-    
     const tasks = await this.repositoryTask.find({
       where: {
-        id: tokenPayload.sub
+      criadaPor: {
+        id: tokenPayload.sub,
       },
+    },
       relations: ['criadaPor'],
       order: {
         id: 'asc'
@@ -143,8 +143,22 @@ export class TasksService {
     })
 
     if(!task) {
-      throw new NotFoundException('Tarefa não encontrada')
+      throw new NotFoundException('Tarefa não encontrada!')
     }
+    return this.repositoryTask.save(task)
+  }
+
+  async lateTask (id: number, updateTaskDto: UpdateTaskDto){
+    const task = await this.repositoryTask.preload({
+      id,
+      ...updateTaskDto,
+      state: TypesStatus.ATRASADO
+    });
+
+    if (!task) {
+      throw new NotFoundException('Tarefa não encontrada!')
+    }
+
     return this.repositoryTask.save(task)
   }
 }

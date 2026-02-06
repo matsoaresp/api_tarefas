@@ -1,6 +1,6 @@
 import { timestamp } from "rxjs";
 import { TypesStatus } from "src/enums/types.enum";
-import { User } from "src/users/entities/user.entity";
+import { Users } from "src/users/entities/users.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
@@ -25,9 +25,9 @@ export class Task {
     @Column({type: 'timestamp'})
     dueDate: Date;
     
-    @ManyToOne(() => User, {onDelete: 'CASCADE'})
+    @ManyToOne(() => Users, {onDelete: 'CASCADE'})
     @JoinColumn({name: 'criadaPor'})
-    criadaPor: User;
+    criadaPor: Users;
 
     
 
