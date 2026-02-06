@@ -4,11 +4,19 @@ import { AppService } from '../app/app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from 'src/users/users.module';
 import { TasksModule } from 'src/tasks/tasks.module';
+import { AuthModule } from 'src/auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
+import jwtConfig from 'src/auth/config/jwt.config';
 
 @Module({
   imports: 
   [UsersModule, 
     TasksModule,
+    AuthModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [jwtConfig],
+    }),
     TypeOrmModule.forRoot({
     type: 'postgres',
     host: 'localhost',

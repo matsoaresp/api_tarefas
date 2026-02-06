@@ -1,23 +1,27 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import {LoginDto } from './dto/login.dto';
 import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HashingService } from './hashing/hashing.service';
 import { JwtService } from '@nestjs/jwt';
+import jwtConfig from './config/jwt.config';
+import type { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-  jwtConfiguration: any;
+  
 
   constructor (
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly hashingService: HashingService,
+    @Inject(jwtConfig.KEY)
+    private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
     private readonly jwtService: JwtService
   ){}
-  async login(loginDto: LoginDto) {
-    
+
+  async login(loginDto: LoginDto) {  
     let passwordValid = false;
 
     const user = await this.userRepository.findOneBy({
@@ -34,7 +38,7 @@ export class AuthService {
       user.password,
     );
 
-    if (passwordValid){
+    if (!passwordValid){
       throw new UnauthorizedException('Senha inválida');
     }
 

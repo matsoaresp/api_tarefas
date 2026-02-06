@@ -41,8 +41,13 @@ export class TasksService {
     return task;
   }
 
-  async findAll() {
+  async findAll(tokenPayload: TokenPayloadDto) {
+
+    
     const tasks = await this.repositoryTask.find({
+      where: {
+        id: tokenPayload.sub
+      },
       relations: ['criadaPor'],
       order: {
         id: 'asc'
