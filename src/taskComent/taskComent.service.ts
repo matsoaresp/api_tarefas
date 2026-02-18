@@ -102,4 +102,21 @@ export class TaskComentService {
         await this.taskComentRepository.save(update)
         return update
     }
+
+    async delete (
+        id:number,
+        tokenPayload: TokenPayloadDto
+    ){
+
+        const taskComent = await this.taskComentRepository.findOne({
+            where: { id }
+        });
+
+        if (!taskComent) {
+            throw new NotFoundException('sTarefa não encontrada')
+        }   
+        
+        await this.taskComentRepository.remove(taskComent)
+        return taskComent;
+    }
 }

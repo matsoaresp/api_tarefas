@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
 
 import { TaskComentService } from "./taskComent.service";
 import { CreateComentTask } from "./dto/create-comentTask.dto";
@@ -36,5 +36,14 @@ export class TaskComentController {
         @TokenPayloadParam() tokenPayload: TokenPayloadDto,
     ) {
         return await this.taskComentService.update(id,updateComentTask,tokenPayload)
+    }
+
+    @Delete(":id")
+    async delete (
+        @Param('id', ParseIntPipe) id: number,
+        @TokenPayloadParam() tokenPayload: TokenPayloadDto
+    ) {
+       
+        return await this.taskComentService.delete(id,tokenPayload)
     }
 }
