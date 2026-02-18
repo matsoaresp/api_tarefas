@@ -1,4 +1,3 @@
-import { timestamp } from "rxjs";
 import { TypesStatus } from "src/enums/types.enum";
 import { Users } from "src/users/entities/users.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
