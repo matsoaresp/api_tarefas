@@ -7,11 +7,13 @@ import { TasksModule } from 'src/tasks/tasks.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import jwtConfig from 'src/auth/config/jwt.config';
+import { TaskComentModule } from 'src/taskComent/taskComent.module';
 
 @Module({
   imports: 
   [UsersModule, 
     TasksModule,
+    TaskComentModule,
     AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,

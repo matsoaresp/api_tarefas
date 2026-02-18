@@ -23,7 +23,7 @@ export class TasksService {
     )
 
     if(!user) {
-      throw new NotFoundException('Usuario não econtrado! ')
+      throw new NotFoundException('Usuario não encontrado! ')
     }
      const now = new Date();
 
