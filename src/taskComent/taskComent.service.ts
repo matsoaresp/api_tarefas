@@ -113,7 +113,7 @@ export class TaskComentService {
         });
 
         if (!taskComent) {
-            throw new NotFoundException('Tarefa não encontrada')
+            throw new NotFoundException('sTarefa não encontrada')
         }   
         
         await this.taskComentRepository.remove(taskComent)
