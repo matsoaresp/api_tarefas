@@ -5,7 +5,8 @@ import { UsersService } from "src/users/users.service";
 import { TasksService } from "src/tasks/tasks.service";
 import { CreateComentTask } from "./dto/create-comentTask.dto";
 import { TokenPayloadDto } from "src/auth/dto/token-payload.dto";
-import { NotFoundException } from "@nestjs/common";
+import { ForbiddenException, NotFoundException } from "@nestjs/common";
+import { UpdateComentTask } from "./dto/update-comentTask.dto";
 
 export class TaskComentService {
 
@@ -53,5 +54,52 @@ export class TaskComentService {
         })
     }
 
-   
+    async findOne (
+        id:number
+    ){
+
+        const comentTask = await this.taskComentRepository.findOne({
+            where: {id},
+            relations: ['comented_to']
+        })
+
+        if (!comentTask) {
+            throw new NotFoundException('Comentario não encontrado')
+        }
+
+        await this.taskComentRepository.save(comentTask)
+        return comentTask
+
+    }
+
+
+    async update (
+        id: number,
+        updateComentTask: UpdateComentTask,
+        tokenPayload: TokenPayloadDto
+    ){
+        const taskComent = await this.taskComentRepository.findOne({
+            where: {id},
+            relations: ['comented_to']
+        })
+
+        if (!taskComent) {
+            throw new NotFoundException('Comentario não encontrado')
+        }
+
+        if (taskComent.comented_to.id !== tokenPayload.sub){
+            throw new ForbiddenException ('Não é possivel atualizar esse comentario')
+        }
+
+        const update = await this.taskComentRepository.preload({
+            id,
+            coment: updateComentTask.coment,
+        });
+
+        if (!update) {
+            throw new NotFoundException ('Tarefa não encontrada! ')
+        }
+        await this.taskComentRepository.save(update)
+        return update
+    }
 }
