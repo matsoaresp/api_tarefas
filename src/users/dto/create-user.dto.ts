@@ -1,6 +1,5 @@
 import { Exclude } from 'class-transformer';
-import { IsString, IsNumber, IsOptional, IsEmail, IsNotEmpty } from 'class-validator';
-import { isWeakMap } from 'util/types';
+import { IsString, IsEmail, IsNotEmpty } from 'class-validator';
 export class CreateUserDto {
 
     @IsNotEmpty()
@@ -11,7 +10,7 @@ export class CreateUserDto {
     @IsEmail()
     email: string
 
-    
+    @Exclude()
     @IsNotEmpty()
     password: string;
 
